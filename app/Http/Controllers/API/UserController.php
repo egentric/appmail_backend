@@ -63,7 +63,7 @@ class UserController extends Controller
             'user_center' => 'required|string',
             'role_id' => 'required|max:15',
         ]);
-        // On modifie le type
+        // On modifie le user
         $user->update([
             $user->user_firstname = $request->input('user_firstname'),
             $user->user_lastname = $request->input('user_lastname'),
