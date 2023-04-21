@@ -16,7 +16,8 @@ class Appmail_contactController extends Controller
     public function index()
     {
         $appmail_contacts = DB::table('appmail_contacts')
-            ->join('users', 'users.id', '=', 'appmail_contacts.user_id')
+            // ->join('users', 'users.id', '=', 'appmail_contacts.user_id')
+
             ->get()
             ->toArray();
         return response()->json([
@@ -50,7 +51,7 @@ class Appmail_contactController extends Controller
         // // ====================table pivot appmail_contacts_categories ====================== // //
 
         // récupèration des identifiants des modèles Categories à partir de la requête HTTP : $contactCategoriesIds[] = $request->appmail_category_id;.
-        $contactCategoriesIds[] = $request->appmail_category_id;
+        $contactCategoriesIds[] = $request->category_id;
         // on vérifie que le tableau $contactCategoryIds n'est pas vide,
         if (!empty($contactCategoriesIds)) {
             // puis pour chaque identifiant dans le tableau, on récupère le modèle Appmail_category correspondant en utilisant la méthode find() 
@@ -74,7 +75,10 @@ class Appmail_contactController extends Controller
      */
     public function show(Appmail_contact $appmail_contact)
     {
-        return response()->json($appmail_contact);
+        // On récupère tous les éléments de la table appmail_contacts et de la table appmail_category
+
+        $appmail_contact_with_category = Appmail_contact::with("appmail_category")->where('appmail_contacts.id', $appmail_contact->id)->first();
+        return response()->json($appmail_contact_with_category);
     }
 
     /**
@@ -88,6 +92,10 @@ class Appmail_contactController extends Controller
             'appmail_contact_email' => 'required|max:100',
             'appmail_contact_business' => 'required|max:100',
         ]);
+
+        DB::table('appmail_category_appmail_contact')->where('appmail_contact_id', '=', $appmail_contact->id)->delete();
+
+
         $appmail_contact->update([
             'appmail_contact_firstname' => $request->appmail_contact_firstname,
             'appmail_contact_lastname' => $request->appmail_contact_lastname,
@@ -100,7 +108,7 @@ class Appmail_contactController extends Controller
         // // ====================table pivot appmail_contacts_categories ====================== // //
 
         // ajoute l'ID d'une catégory, récupéré à partir d'une requête HTTP ($request), à un tableau $appmail_categories.
-        $appmail_categories[] = $request->appmail_category_id;
+        $appmail_categories[] = $request->category_id;
 
         // on vérifie que le tableau $appmail_categories n'est pas vide,
         if (!empty($appmail_categories)) {
