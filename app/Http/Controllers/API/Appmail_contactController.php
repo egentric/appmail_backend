@@ -13,19 +13,29 @@ class Appmail_contactController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
-        $appmail_contacts = DB::table('appmail_contacts')
-            // ->join('users', 'users.id', '=', 'appmail_contacts.user_id')
+        // $contacts = DB::table('appmail_contacts')
+        //     ->leftJoin('appmail_category_appmail_contact', 'appmail_category_appmail_contact.appmail_contact_id', '=', 'appmail_contacts.id')
+        //     ->leftJoin('appmail_categories', 'appmail_categories.id', '=', 'appmail_category_appmail_contact.appmail_category_id')
+        //     ->select('appmail_contacts.*', 'appmail_categories.appmail_category_name as category_name')
+        //     ->get();
+        $contacts = Appmail_contact::with("appmail_categories")->get();
+        // $groupedContacts = $contacts->groupBy('id');
+        // $result = $groupedContacts->map(function ($item, $key) {
+        //     $categoryNames = $item->pluck('category_name')->unique()->toArray();
+        //     $contact = $item;
+        //     $contact->category_name = $categoryNames;
+        //     return $contact;
+        // });
 
-            ->get()
-            ->toArray();
         return response()->json([
             'status' => 'Success',
-            'data' => $appmail_contacts,
+            // 'data' => $result,
+            'data' => $contacts,
         ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
