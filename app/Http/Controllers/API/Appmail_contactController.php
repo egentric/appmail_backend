@@ -16,12 +16,12 @@ class Appmail_contactController extends Controller
 
     public function index()
     {
-        // $contacts = DB::table('appmail_contacts')
-        //     ->leftJoin('appmail_category_appmail_contact', 'appmail_category_appmail_contact.appmail_contact_id', '=', 'appmail_contacts.id')
-        //     ->leftJoin('appmail_categories', 'appmail_categories.id', '=', 'appmail_category_appmail_contact.appmail_category_id')
-        //     ->select('appmail_contacts.*', 'appmail_categories.appmail_category_name as category_name')
-        //     ->get();
-        $contacts = Appmail_contact::with("appmail_categories")->get();
+        $contacts = DB::table('appmail_contacts')
+            // ->leftJoin('appmail_category_appmail_contact', 'appmail_category_appmail_contact.appmail_contact_id', '=', 'appmail_contacts.id')
+            // ->leftJoin('appmail_categories', 'appmail_categories.id', '=', 'appmail_category_appmail_contact.appmail_category_id')
+            // ->select('appmail_contacts.*', 'appmail_categories.appmail_category_name as category_name')
+            ->get();
+        // $contacts = Appmail_contact::with("appmail_categories")->get();
         // $groupedContacts = $contacts->groupBy('id');
         // $result = $groupedContacts->map(function ($item, $key) {
         //     $categoryNames = $item->pluck('category_name')->unique()->toArray();
@@ -154,6 +154,20 @@ class Appmail_contactController extends Controller
         // On retourne la réponse JSON
         return response()->json([
             'status' => 'Supprimer avec succès'
+        ]);
+    }
+
+    public function filtreBusiness($appmail_contact_business)
+    {
+        // Récupérer l'utilisateur connecté
+        // $user = auth()->user();
+        // dd($appmail_contact_business);
+        $contacts = DB::table('appmail_contacts')->where('appmail_contact_business', $appmail_contact_business)->get();
+        // dd($contacts);
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => $contacts,
         ]);
     }
 }
