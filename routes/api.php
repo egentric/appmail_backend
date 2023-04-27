@@ -34,7 +34,8 @@ Route::controller(Appmail_contactController::class)->group(function () {
     Route::get('appmail_contacts/{appmail_contact}', 'show')->middleware('auth:api');
     Route::post('appmail_contacts/{appmail_contact}', 'update')->middleware('auth:api');
     Route::delete('appmail_contacts/{appmail_contact}', 'destroy')->middleware('auth:api');
-    Route::get('appmail_contacts/{appmail_contact_business}', 'filtreBusiness')->middleware('auth:api');
+    Route::get('contacts_filter', 'indexFilterBusiness')->middleware('auth:api');
+    Route::get('appmail_contacts/category/{appmail_category}', 'indexFilterCategory')->middleware('auth:api');
 });
 
 // Route::apiResource("appmail_categories", Appmail_categoryController::class);

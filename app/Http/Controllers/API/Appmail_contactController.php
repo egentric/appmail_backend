@@ -7,6 +7,7 @@ use App\Models\Appmail_contact;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Appmail_category;
+use App\Filters\ContactCategoryFilter;
 
 class Appmail_contactController extends Controller
 {
@@ -16,12 +17,12 @@ class Appmail_contactController extends Controller
 
     public function index()
     {
-        $contacts = DB::table('appmail_contacts')
-            // ->leftJoin('appmail_category_appmail_contact', 'appmail_category_appmail_contact.appmail_contact_id', '=', 'appmail_contacts.id')
-            // ->leftJoin('appmail_categories', 'appmail_categories.id', '=', 'appmail_category_appmail_contact.appmail_category_id')
-            // ->select('appmail_contacts.*', 'appmail_categories.appmail_category_name as category_name')
-            ->get();
-        // $contacts = Appmail_contact::with("appmail_categories")->get();
+        // $contacts = DB::table('appmail_contacts')
+        // ->leftJoin('appmail_category_appmail_contact', 'appmail_category_appmail_contact.appmail_contact_id', '=', 'appmail_contacts.id')
+        // ->leftJoin('appmail_categories', 'appmail_categories.id', '=', 'appmail_category_appmail_contact.appmail_category_id')
+        // ->select('appmail_contacts.*', 'appmail_categories.appmail_category_name as category_name')
+        // ->get();
+        $contacts = Appmail_contact::with("appmail_category")->get();
         // $groupedContacts = $contacts->groupBy('id');
         // $result = $groupedContacts->map(function ($item, $key) {
         //     $categoryNames = $item->pluck('category_name')->unique()->toArray();
@@ -157,17 +158,28 @@ class Appmail_contactController extends Controller
         ]);
     }
 
-    public function filtreBusiness($appmail_contact_business)
-    {
-        // Récupérer l'utilisateur connecté
-        // $user = auth()->user();
-        // dd($appmail_contact_business);
-        $contacts = DB::table('appmail_contacts')->where('appmail_contact_business', $appmail_contact_business)->get();
-        // dd($contacts);
+    // // ====================Filtre business ====================== // //
 
+    public function indexFilterBusiness(Request $request)
+    {
+        $contacts = Appmail_contact::filter($request)->with("appmail_category")->get();
         return response()->json([
             'status' => 'Success',
+            // 'data' => $result,
             'data' => $contacts,
+        ]);
+    }
+
+
+    // // ====================Filtre Category ====================== // //
+
+
+    public function indexFilterCategory(Appmail_category $appmail_category)
+    {
+        $appmail_category_with_contacts = Appmail_category::with("appmail_contacts")->where('appmail_categories.id', $appmail_category->id)->first();
+        return response()->json([
+            'status' => 'Success',
+            'data' => $appmail_category_with_contacts
         ]);
     }
 }

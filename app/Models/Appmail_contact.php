@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Filters\BusinessFilter;
+use App\Filters\CategoryFilter;
+
+use Illuminate\Database\Eloquent\Builder;
 
 class Appmail_contact extends Model
 {
@@ -21,4 +25,14 @@ class Appmail_contact extends Model
         //Relation many to many avec appmail_categories
         return $this->belongsToMany('App\Models\Appmail_category');
     }
+
+    public function scopeFilter(Builder $builder, $request)
+    {
+        return (new BusinessFilter($request))->filter($builder);
+    }
+
+    // public function scopeFilter1(Builder $builder, $request)
+    // {
+    //     return (new CategoryFilter($request))->filter($builder);
+    // }
 }
