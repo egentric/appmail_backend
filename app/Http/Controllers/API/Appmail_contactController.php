@@ -176,10 +176,29 @@ class Appmail_contactController extends Controller
 
     public function indexFilterCategory(Appmail_category $appmail_category)
     {
-        $appmail_category_with_contacts = Appmail_category::with("appmail_contacts")->where('appmail_categories.id', $appmail_category->id)->first();
+        // dd($appmail_category->id);
+        // $appmail_contact_with_category = Appmail_contact::with("appmail_category")->where('appmail_contacts.id', $appmail_contact->id)->first();
+        // $appmail_category_with_contacts = Appmail_category::with("appmail_contacts")->where('appmail_categories.id', $appmail_category->id)->first();
+
+        // $appmail_contact_with_category = Appmail_contact::with(['appmail_category' => function($query) use ($appmail_category) {
+        //     $query->whereIn('id', $appmail_category);
+        // }])->get();
+
+        $appmail_contact_with_category = Appmail_category::find($appmail_category);
+        $appmail_contact_with_category->load(['appmail_contacts' => function ($query) use ($appmail_category) {
+            $query->select('appmail_contacts.*', 'appmail_category_id')
+                ->join('appmail_category_appmail_contact', 'appmail_contacts.id', '=', 'appmail_category_appmail_contact.appmail_contact_id')
+                ->where('appmail_category_appmail_contact.appmail_category_id', '=', $appmail_category);
+        }]);
+
+        // $appmail_contact_with_category = Appmail_contact::with("appmail_category")
+        //     ->where('appmail_category.id', $appmail_category->id)
+        //     ->get();
+
+
         return response()->json([
             'status' => 'Success',
-            'data' => $appmail_category_with_contacts
+            'data' => $appmail_contact_with_category
         ]);
     }
 }
