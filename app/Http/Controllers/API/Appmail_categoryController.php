@@ -15,8 +15,6 @@ class Appmail_categoryController extends Controller
     public function index()
     {
         $appmail_categories = DB::table('appmail_categories')
-            // ->join('users', 'users.id', '=', 'appmail_categories.user_id')
-            // ->select()
             ->get()
             ->toArray();
         return response()->json([
